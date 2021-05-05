@@ -62,7 +62,7 @@ class GoutteFactory implements DriverFactory
      */
     public function buildDriver(array $config)
     {
-        if (!class_exists('Behat\Mink\Driver\GoutteDriver')) {
+        if (!\class_exists('Behat\Mink\Driver\GoutteDriver')) {
             throw new \RuntimeException(
                 'Install MinkGoutteDriver in order to use goutte driver.'
             );
@@ -116,7 +116,8 @@ class GoutteFactory implements DriverFactory
     {
         $refl = new \ReflectionParameter(array('Goutte\Client', 'setClient'), 0);
 
-        if ($refl->getClass() && 'Guzzle\Http\ClientInterface' === $refl->getClass()->getName()) {
+        $type = $refl->getType();
+        if ($type instanceof \ReflectionNamedType && 'Guzzle\Http\ClientInterface' === $type->getName()) {
             return true;
         }
 
@@ -125,7 +126,7 @@ class GoutteFactory implements DriverFactory
 
     private function isGuzzle6()
     {
-        return interface_exists('GuzzleHttp\ClientInterface') &&
-            version_compare(\GuzzleHttp\ClientInterface::VERSION, '6.0.0', '>=');
+        return \interface_exists('GuzzleHttp\ClientInterface') &&
+            \version_compare(\GuzzleHttp\ClientInterface::VERSION, '6.0.0', '>=');
     }
 }
